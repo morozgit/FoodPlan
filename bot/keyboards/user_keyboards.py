@@ -5,8 +5,9 @@ from aiogram.types import (
     InlineKeyboardButton,
 )
 
+
 def start_keyboard():
-    button_data = [('Отлично!',),  ('Все пропало',)]
+    button_data = [("Отлично!",), ("Все пропало",)]
     return ReplyKeyboardMarkup(
         keyboard=[[KeyboardButton(text=text) for text in row] for row in button_data],
         resize_keyboard=True,
