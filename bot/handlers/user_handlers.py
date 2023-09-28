@@ -26,37 +26,37 @@ async def process_start_command(message: Message, state: FSMContext):
 
 
 @router.message(Command(commands=["categories", "start"]))
-@router.message(States.SHOW_CATEGORIES)
+@router.message(States.show_categories)
 async def get_categories(message: Message, state: FSMContext):
     await message.answer("Categories")
-    await state.set_state(States.SHOW_DISHES)
+    await state.set_state(States.show_dishes)
 
 
-@router.message(States.SHOW_DISHES)
+@router.message(States.show_dishes)
 async def get_dishes(message: Message, state: FSMContext):
     await message.answer("Dishes")
-    await state.set_state(States.SHOW_RECIPE)
+    await state.set_state(States.show_recipe)
 
 
-@router.message(States.SHOW_RECIPE)
+@router.message(States.show_recipe)
 async def get_recipe(message: Message, state: FSMContext):
     await message.answer("Recept")
-    await state.set_state(States.SHOW_INGREDIENTS)
+    await state.set_state(States.show_ingredients)
 
 
-@router.message(States.SHOW_INGREDIENTS)
+@router.message(States.show_ingredients)
 async def get_ingredients(message: Message, state: FSMContext):
     await message.answer("ingredients")
     await state.clear()
 
 
-@router.message(States.SHOW_FAVORITES)
+@router.message(States.show_favorites)
 @router.message(Command(commands=["favorites"]))
 async def get_favorites(message: Message, state: FSMContext):
     await message.answer("favorites")
-    # await state.set_state(States.SHOW_DISHES) # todo
+    # await state.set_state(States.show_dishes) # todo
 
 
-@router.message(States.SHOW_PAY)
+@router.message(States.show_pay)
 async def get_pay(message: Message, state: FSMContext):
     await message.answer("pay")
