@@ -1,11 +1,11 @@
-from django.core.management.base import BaseCommand
-from django.conf import settings
-import logging
 import asyncio
-from bot.config_data.config import load_config
+import logging
+
 from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.storage.memory import MemoryStorage
+from bot.config_data.config import load_config
 from bot.handlers import user_handlers
+from django.core.management.base import BaseCommand
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,16 @@ class Command(BaseCommand):
 
         await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot)
+        await bot.delete_webhook(drop_pending_updates=True)
+        await dp.start_polling(bot)
 
+    async def set_main_menu(self, bot: Bot):
+        await bot.set_my_commands(
+            [
+                types.BotCommand(command="/help", description="Справка по работе бота"),
+                types.BotCommand(command="/support", description="Поддержка"),
+            ]
+        )
     async def set_main_menu(self, bot: Bot):
         await bot.set_my_commands(
             [
