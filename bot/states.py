@@ -9,3 +9,4 @@ class States(StatesGroup):
 
     # ADD_FAVORITES = State()
     SHOW_FAVORITES = State()
+    SHOW_PAY = State()
