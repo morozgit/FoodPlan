@@ -83,12 +83,13 @@ class Bot_user(models.Model):
         verbose_name_plural = "Пользователи"
 
     def __str__(self):
-        return f"{self.tig_id} {self.name} {self.subscription_date}"
+        return f"{self.tig_id} {self.name}"
 
 
 class Pay(models.Model):
     user = models.ForeignKey(Bot_user, related_name="Users_pays", verbose_name= "Пользователь", on_delete=models.CASCADE)
-    pay_date = models.DateTimeField(auto_now=True, verbose_name="Дата оплаты")
+    pay_date = models.DateTimeField(auto_now=False, verbose_name="Дата оплаты")
+    summ = models.FloatField(default=100)
 
     class Meta:
         verbose_name = "Платеж"

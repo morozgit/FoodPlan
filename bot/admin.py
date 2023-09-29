@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Bot_user, Dish, Category, Ingridient, ReceptItem
+from .models import Bot_user, Dish, Category, Ingridient, ReceptItem, Pay
 
 
 @admin.register(Bot_user)
@@ -44,6 +44,17 @@ class DishAdmin (admin.ModelAdmin):
 
 
 admin.site.register(Dish, DishAdmin)
+
+
+
+@admin.register(Pay)
+class IngridientAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'pay_date',
+        'summ'
+        )
+    list_filter = ('user', 'pay_date')
 
 
 
