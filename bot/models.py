@@ -11,8 +11,8 @@ class Users(models.Model):
     name = models.ForeignKey(User, verbose_name='Пользователь',
                              related_name='users',
                              on_delete=models.CASCADE)
-    tig_id = models.CharField(verbose_name='Телеграмм ID', max_length=200) # TODO
-    subscription = models.BooleanField(verbose_name='Подписка', default=False)
+    tig_id = models.CharField(verbose_name='Телеграмм ID', max_length=200)
+    # subscription = models.BooleanField(verbose_name='Подписка', default=False)
     subscription_date = models.DateField(verbose_name='Дата подписки',
                                          auto_now=True,
                                          blank=True, null=True)
@@ -64,6 +64,7 @@ class Favorites(models.Model):
     
     class Meta:
         verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранное'
 
     def __str__(self):
         return f'{self.user_id}, {self.dish_id}'
@@ -88,7 +89,8 @@ class Recipe(models.Model):
     dish_id = models.ForeignKey(Dish, verbose_name='ID Блюда',
                                 related_name='recipes',
                                 on_delete=models.CASCADE,)
-    ingredient_id = models.ManyToManyField(Ingredient, verbose_name='Категории',
+    ingredient_id = models.ManyToManyField(Ingredient,
+                                           verbose_name='Ингредиент',
                                            related_name='recipes')
     col_ingredient = models.FloatField(verbose_name='Количество')
     unit = models.CharField(
@@ -114,7 +116,8 @@ class Pay(models.Model):
                                      auto_now_add=True)
     
     class Meta:
-        verbose_name = 'Оплата'
+        verbose_name = 'Оплату'
+        verbose_name_plural = 'Оплата'
 
     def __str__(self):
         return f'{self.user_id}, {self.sum}, {self.date_time}'

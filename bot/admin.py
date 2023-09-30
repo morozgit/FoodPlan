@@ -8,10 +8,9 @@ class UsersAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'tig_id',
-        'subscription',
         'subscription_date',
         )
-    list_filter = ('subscription','subscription_date',)
+    list_filter = ('subscription_date',)
 
 
 @admin.register(Dish)

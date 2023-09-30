@@ -2,6 +2,7 @@ import os
 from dataclasses import dataclass
 from dotenv import load_dotenv
 import json
+from aiogram import Bot, Router
 
 @dataclass
 class AdminIDs:
@@ -21,6 +22,7 @@ class DatabaseConfig:
 class TelegramBot:
     token: str
     # admin_ids: list  # Список id администраторов бота
+    
 
 
 @dataclass
@@ -28,6 +30,8 @@ class Config:
     telegram_bot: TelegramBot
     db: DatabaseConfig 
     admins: AdminIDs
+    payment: str
+    bot: Bot
 
 
 # @dataclass
@@ -37,5 +41,8 @@ def load_config():
         telegram_bot=TelegramBot(token=os.getenv('TELEGRAM_TOKEN')),
         # admin_ids=AdminIDs(ids=os.getenv('ADMIN_IDS')),
         db=DatabaseConfig(path=os.getenv('DATABASE_NAME')),
-        admins=AdminIDs(eval(os.getenv('ADMIN_IDS')))
+        admins=AdminIDs(eval(os.getenv('ADMIN_IDS'))),
+        payment=os.getenv('PAYMENTS_TOKEN'),
+        bot=Bot(token=os.getenv('TELEGRAM_TOKEN')),
+
     )
