@@ -25,7 +25,3 @@ def chose_subscription():
 
 def get_main_menu():
     button_data = [('Главное меню',)]
-    return ReplyKeyboardMarkup(
-        keyboard=[[KeyboardButton(text=text) for text in row] for row in button_data],
-        resize_keyboard=True,
-    )

@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from .models import Users, Dish, Category, Favorites, Ingredient, Recipe, Pay
+from .models import Bot_user, Dish, Category, Ingridient, ReceptItem, Pay
 
 
-@admin.register(Users)
+@admin.register(Bot_user)
 class UsersAdmin(admin.ModelAdmin):
     list_display = (
         'name',
@@ -13,81 +13,51 @@ class UsersAdmin(admin.ModelAdmin):
     list_filter = ('subscription_date',)
 
 
-@admin.register(Dish)
-class DishAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'description',
-        'category_id',
-        )
-    list_filter = ('category_id',)
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         'name',
-        'description',
         )
+    list_filter = ('name',)
 
 
-@admin.register(Favorites)
-class FavoritesAdmin(admin.ModelAdmin):
-    list_display = (
-        'user_id',
-        'dish_id',
-        )
-    list_filter = (
-        'user_id', 
-        'dish_id'
-        )
-
-    raw_id_fields = (
-        'user_id',
-        'dish_id'
-        )
-
-
-@admin.register(Ingredient)
-class IngredientAdmin(admin.ModelAdmin):
+@admin.register(Ingridient)
+class IngridientAdmin(admin.ModelAdmin):
     list_display = (
         'name',
-        'count',
         'allergen'
         )
-    list_filter = (
-        'allergen', 
-        )
+    list_filter = ('name', 'allergen')
 
 
-@admin.register(Recipe)
-class RecipeAdmin(admin.ModelAdmin):
-    list_display = (
-        'dish_id',
-        'col_ingredient',
-        'unit'
-        )
-    list_filter = (
-        'dish_id', 
-        'ingredient_id',
-        )
-    raw_id_fields = (
-        'dish_id', 
-        'ingredient_id',
-        )
+class ReceptItemInline(admin.TabularInline):
+    model = ReceptItem
+
+
+class DishAdmin (admin.ModelAdmin):
+    inlines = [ ReceptItemInline ]
+    class Meta:
+        model = Dish
+
+
+admin.site.register(Dish, DishAdmin)
+
 
 
 @admin.register(Pay)
-class PayAdmin(admin.ModelAdmin):
+class IngridientAdmin(admin.ModelAdmin):
     list_display = (
-        'user_id',
-        'sum',
-        'date_time',
+        'user',
+        'pay_date',
+        'summ'
         )
-    list_filter = (
-        'user_id', 
-        'date_time',
-        )
-    raw_id_fields = (
-        'user_id', 
-        )
+    list_filter = ('user', 'pay_date')
+
+
+
+
+
+
+

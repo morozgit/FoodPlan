@@ -135,4 +135,3 @@ async def process_pre_checkout_query(pre_checkout_query: types.PreCheckoutQuery,
 async def on_successful_payment(message: Message, state: FSMContext):
     await message.answer(f"""Оплата успешно проведена! Вы получили премиум-подписку на сумму 
 {message.successful_payment.total_amount // 100} {message.successful_payment.currency}.""")
-

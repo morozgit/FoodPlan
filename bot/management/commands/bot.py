@@ -15,13 +15,13 @@ class Command(BaseCommand):
         try:
             asyncio.run(self.start_bot())
         except (KeyboardInterrupt, SystemExit):
-            logger.error('Bot stopped')
+            logger.error("Bot stopped")
 
     async def start_bot(self):
         logging.basicConfig(
             level=logging.INFO,
             format="%(filename)s:%(lineno)d | %(levelname)-8s | [%(asctime)s] | "
-                   "%(name)s | %(message)s",
+            "%(name)s | %(message)s",
         )
         logger.info("Starting bot")
         config = load_config()
@@ -29,11 +29,21 @@ class Command(BaseCommand):
         bot = Bot(config.telegram_bot.token, parse_mode="HTML")
         dp = Dispatcher(storage=MemoryStorage())
         dp.include_router(user_handlers.router)
+
         dp.startup.register(self.set_main_menu)
 
         await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot)
+        await bot.delete_webhook(drop_pending_updates=True)
+        await dp.start_polling(bot)
 
+    async def set_main_menu(self, bot: Bot):
+        await bot.set_my_commands(
+            [
+                types.BotCommand(command="/help", description="Справка по работе бота"),
+                types.BotCommand(command="/support", description="Поддержка"),
+            ]
+        )
     async def set_main_menu(self, bot: Bot):
         await bot.set_my_commands(
             [
