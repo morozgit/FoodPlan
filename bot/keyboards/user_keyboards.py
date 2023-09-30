@@ -7,7 +7,7 @@ from aiogram.types import (
 
 
 def start_keyboard():
-    button_data = [('Отлично!',),  ('Подписаться',)]
+    button_data = [('Подписаться',)]
     return ReplyKeyboardMarkup(
         keyboard=[[KeyboardButton(text=text) for text in row] for row in button_data],
         resize_keyboard=True,

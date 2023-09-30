@@ -18,12 +18,13 @@ admin_ids = config.admins.ids
 @router.message(CommandStart())
 async def process_start_command(message: Message, state: FSMContext):
     await message.answer(
-        text="Привет как дела",
+        text="Рецепт дня",
         reply_markup=user_keyboards.start_keyboard(),
     )
     user_id = int(message.from_user.id)
     await state.update_data(prods=[])
     await state.update_data(user_id=user_id)
+    await message.answer_photo()
     await state.set_state(States.choosing_category)
     await state.set_state(States.show_subscription)
 
