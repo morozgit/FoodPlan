@@ -70,7 +70,7 @@ class ReceptItem(models.Model):
         verbose_name_plural = "Ингридиенты"
 
 
-class Bot_user(models.Model):
+class BotUser(models.Model):
     name = models.CharField(verbose_name="Имя", max_length=200, null=True)
     tig_id = models.CharField(verbose_name="Телеграмм ID", max_length=200)
     subscription_date = models.DateField(
@@ -87,7 +87,7 @@ class Bot_user(models.Model):
 
 
 class Pay(models.Model):
-    user = models.ForeignKey(Bot_user, related_name="Users_pays", verbose_name= "Пользователь", on_delete=models.CASCADE)
+    user = models.ForeignKey(BotUser, related_name="Users_pays", verbose_name= "Пользователь", on_delete=models.CASCADE)
     pay_date = models.DateTimeField(auto_now=False, verbose_name="Дата оплаты")
     summ = models.FloatField(default=100)
 
