@@ -7,14 +7,24 @@ from asgiref.sync import sync_to_async
 from bot.config_data.config import load_config
 from bot.handlers.states import States
 from bot.keyboards import user_keyboards
-from bot.models import Category, Dish
+from bot.models import Category, Dish, BotUser
+from django.db.models import Q
+
 
 router = Router()
 config = load_config()
 admin_ids = config.admins.ids
 
 
-@router.message(Command(commands=["categories", "start"]))
+@router.message(Command(commands=["start"]))
+async def start(message: Message):
+    BotUser.objects.get_or_create(
+        name=message.from_user.username,
+        tig_id=message.from_user.id
+    )
+
+
+@router.message(Command(commands=["categories"]))
 @router.message(States.show_categories)
 async def get_categories(message: Message, state: FSMContext):
     categories = await sync_to_async(Category.objects.all)()
@@ -44,17 +54,17 @@ async def get_dishes(message: Message, state: FSMContext):
     # await state.set_state(States.show_recipe)
 
 
-@router.callback_query(F.data == "btn_next_dish")
-@router.callback_query(F.data == "btn_prev_dish")
+@router.callback_query(F.data == "next_dish_btn")
+@router.callback_query(F.data == "prev_dish_btn")
 async def next_dish(callback: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
     posted_dish = state_data.get("posted_dish")
     dish_id = state_data.get("dish_id")
 
     dish = None
-    if callback.data == "btn_next_dish":
+    if callback.data == "next_dish_btn":
         dish = Dish.objects.filter(id__gt=dish_id).order_by('id').first()
-    elif callback.data == "btn_prev_dish":
+    elif callback.data == "prev_dish_btn":
         dish = Dish.objects.filter(id__lt=dish_id).order_by('id').first()
 
     if not dish:
@@ -75,10 +85,42 @@ async def next_dish(callback: CallbackQuery, state: FSMContext):
     )
 
 
-@router.callback_query(F.data == "btn_recipe")
+@router.callback_query(F.data == "recipe_btn")
 async def clicked_recipe(callback: CallbackQuery, state: FSMContext):
     # await state.set_state(States.show_recipe)
     pass
+
+
+@router.callback_query(F.data == "add_favorite_btn")
+async def add_favorite(callback: CallbackQuery, state: FSMContext):
+    state_data = await state.get_data()
+    posted_dish = state_data.get("posted_dish")
+    dish_id = state_data.get("dish_id")
+
+    user = BotUser.objects.get(tig_id=callback.from_user.id)
+    user.favorites.set([dish_id, *user.favorites.all()])
+    await callback.answer("Добавлено в избранное")
+
+    await posted_dish.edit_reply_markup(
+        inline_message_id=str(posted_dish.message_id),
+        reply_markup=user_keyboards.dish_keyboard(should_add_favorite=False)
+    )
+
+
+@router.callback_query(F.data == "remove_favorite_btn")
+async def remove_favorite(callback: CallbackQuery, state: FSMContext):
+    state_data = await state.get_data()
+    posted_dish = state_data.get("posted_dish")
+    dish_id = state_data.get("dish_id")
+
+    user = BotUser.objects.get(tig_id=callback.from_user.id)
+    user.favorites.set([*user.favorites.filter(~Q(id=dish_id))])
+    await callback.answer("Удалено из избранного")
+
+    await posted_dish.edit_reply_markup(
+        inline_message_id=str(posted_dish.message_id),
+        reply_markup=user_keyboards.dish_keyboard(should_add_favorite=True)
+    )
 
 
 # @router.message(States.show_recipe)
@@ -96,12 +138,14 @@ async def get_ingredients(message: Message, state: FSMContext):
 @router.message(States.show_favorites)
 @router.message(Command(commands=["favorites"]))
 async def get_favorites(message: Message, state: FSMContext):
-    await message.answer("favorites")
-    await state.set_state(States.show_dishes)  # todo
+    pass
+    # await message.answer("favorites")
+    # await state.set_state(States.show_dishes)  # todo
+
 
 
 @router.message(States.show_pay)
 async def get_pay(message: Message, state: FSMContext):
     await message.answer("pay")
 
-    await state.set_state(UserStates.choosing_category)
+    # await state.set_state(UserStates.choosing_category)

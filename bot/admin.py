@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from .models import Bot_user, Dish, Category, Ingridient, ReceptItem, Pay
+from .models import BotUser, Dish, Category, Ingridient, ReceptItem, Pay
 
 
-@admin.register(Bot_user)
+@admin.register(BotUser)
 class UsersAdmin(admin.ModelAdmin):
     list_display = (
         'name',
@@ -11,9 +11,6 @@ class UsersAdmin(admin.ModelAdmin):
         'subscription_date',
         )
     list_filter = ('subscription_date',)
-
-
-
 
 
 @admin.register(Category)
