@@ -12,3 +12,5 @@ class States(StatesGroup):
     # add_favorites = State()
     show_favorites = State()
     show_pay = State()
+
+    show_favorite = State()

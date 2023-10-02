@@ -5,7 +5,7 @@ from aiogram.types import (
     InlineKeyboardButton,
 )
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
-
+from bot.models import Category
 
 def start_keyboard():
     button_data = [("Отлично!",), ("Все пропало",)]
@@ -15,13 +15,14 @@ def start_keyboard():
     )
 
 
-def categories_keyboard(categories):
+def categories_keyboard():
+    categories = Category.objects.all()
     builder = ReplyKeyboardBuilder()
     for category in categories:
         builder.add(KeyboardButton(text=category.name))
 
     builder.adjust(3)
-    return builder.as_markup(resize_keyboard=True)
+    return builder.as_markup(resize_keyboard=True, one_time_keyboard=True)
 
 
 def dish_keyboard(should_add_favorite=True):
@@ -46,3 +47,16 @@ def dish_detail_keyboard():
                                      callback_data="btn_current_dish"))
 
 
+def fav_keyboard(should_add_favorite=False):
+    builder = InlineKeyboardBuilder()
+    builder.row(InlineKeyboardButton(text="Рецепт", callback_data="recipe_btn"))
+
+    if should_add_favorite:
+        builder.row(InlineKeyboardButton(text="Добавить в избранное", callback_data="add_favorite_btn"))
+    else:
+        builder.row(InlineKeyboardButton(text="Удалить из избранного", callback_data="remove_favorite_btn"))
+
+    builder.row(
+        InlineKeyboardButton(text="Следующее", callback_data="next_fav_btn"),
+    )
+    return builder.as_markup()

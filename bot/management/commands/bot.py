@@ -40,6 +40,7 @@ class Command(BaseCommand):
     async def set_main_menu(self, bot: Bot):
         await bot.set_my_commands(
             [
+                types.BotCommand(command="/start", description="Старт"),
                 types.BotCommand(command="/categories", description="Категории"),
                 types.BotCommand(command="/favorites", description="Избранное"),
                 types.BotCommand(command="/help", description="Справка по работе бота"),
