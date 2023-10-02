@@ -23,6 +23,7 @@ class Category(models.Model):
 class Ingridient(models.Model):
     name = models.CharField(verbose_name="Название", max_length=255)
     allergen = models.BooleanField(verbose_name="Аллерген", default=False)
+    count = models.IntegerField(verbose_name='Количество', default=0)
     price = models.FloatField(verbose_name="Цена")
 
     class Meta:

@@ -28,7 +28,6 @@ async def process_start_command(message: Message, state: FSMContext):
     dish = Dish.objects.all()
     dish_image = FSInputFile(str(dish[0].image))
     ingredients = dish[0].ingridients.all()
-    print(ingredients[0])
     await message.answer(
         text="Рецепт дня",
         reply_markup=user_keyboards.start_keyboard(),
@@ -36,7 +35,7 @@ async def process_start_command(message: Message, state: FSMContext):
     await config.bot.send_photo(chat_id=message.chat.id, photo=dish_image)
     for ingredient in ingredients:
         await message.answer(
-            text=str(ingredient)
+            text=f'{str(ingredient.name)} {ingredient.price} RUB {ingredient.count}'
         )
     user_id = int(message.from_user.id)
     await state.update_data(prods=[])
