@@ -46,6 +46,7 @@ async def get_dishes(message: Message, state: FSMContext):
 
 @router.callback_query(F.data == "btn_next_dish")
 @router.callback_query(F.data == "btn_prev_dish")
+@router.callback_query(F.data == "btn_current_dish")
 async def next_dish(callback: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
     posted_dish = state_data.get("posted_dish")
@@ -56,6 +57,8 @@ async def next_dish(callback: CallbackQuery, state: FSMContext):
         dish = Dish.objects.filter(id__gt=dish_id).order_by('id').first()
     elif callback.data == "btn_prev_dish":
         dish = Dish.objects.filter(id__lt=dish_id).order_by('id').first()
+    elif callback.data == "btn_current_dish":
+        dish = Dish.objects.get(pk=dish_id)
 
     if not dish:
         await callback.answer()
@@ -77,8 +80,26 @@ async def next_dish(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data == "btn_recipe")
 async def clicked_recipe(callback: CallbackQuery, state: FSMContext):
-    # await state.set_state(States.show_recipe)
-    pass
+    state_data = await state.get_data()
+    dish_id = state_data.get("dish_id")
+    dish = await sync_to_async(Dish.objects.get)(id=dish_id)
+    photo = FSInputFile(dish.image.path)
+    caption = f'''{dish.name}
+
+    {dish.description}
+
+'''
+    posted_dish = await callback.message.answer_photo(
+        photo,
+        caption=caption,
+        reply_markup=user_keyboards.dish_detail_keyboard()
+    )
+    ingridients = dish.ingridients
+    print(ingridients)
+    await state.update_data(
+        dish_id=dish.id,
+        posted_dish=posted_dish
+    )
 
 
 # @router.message(States.show_recipe)

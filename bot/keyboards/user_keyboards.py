@@ -32,3 +32,11 @@ def dish_keyboard():
         InlineKeyboardButton(text="Следующее", callback_data="btn_next_dish"),
     )
     return builder.as_markup()
+
+
+def dish_detail_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.row(InlineKeyboardButton(text="Назад",
+                                     callback_data="btn_current_dish"))
+
+
