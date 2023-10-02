@@ -1,13 +1,21 @@
-from aiogram import Bot, Router, types
-from bot.config_data.config import load_config
-from aiogram.filters import CommandStart, Command
-from aiogram.types import Message, FSInputFile, CallbackQuery
+import os
+
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rest.settings')
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+django.setup()
+from aiogram import Bot, F, Router, types
+from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
-from bot.keyboards import user_keyboards
-from bot.handlers.states import States
-from aiogram import F
-from aiogram.types import LabeledPrice
+from aiogram.types import CallbackQuery, FSInputFile, LabeledPrice, Message, FSInputFile
 from aiogram.types.message import ContentType
+
+from bot.config_data.config import load_config
+from bot.handlers.states import States
+from bot.keyboards import user_keyboards
+from bot.models import Dish, Bot_user
+from datetime import datetime
 
 
 router = Router()
@@ -17,14 +25,22 @@ admin_ids = config.admins.ids
 
 @router.message(CommandStart())
 async def process_start_command(message: Message, state: FSMContext):
+    dish = Dish.objects.all()
+    dish_image = FSInputFile(str(dish[0].image))
+    ingredients = dish[0].ingridients.all()
+    print(ingredients[0])
     await message.answer(
         text="Рецепт дня",
         reply_markup=user_keyboards.start_keyboard(),
     )
+    await config.bot.send_photo(chat_id=message.chat.id, photo=dish_image)
+    for ingredient in ingredients:
+        await message.answer(
+            text=str(ingredient)
+        )
     user_id = int(message.from_user.id)
     await state.update_data(prods=[])
     await state.update_data(user_id=user_id)
-    await message.answer_photo()
     await state.set_state(States.choosing_category)
     await state.set_state(States.show_subscription)
 
@@ -130,9 +146,14 @@ async def process_pre_checkout_query(pre_checkout_query: types.PreCheckoutQuery,
     await state.set_state(States.show_successful_payment)
     
 
-
 @router.message(States.show_successful_payment)
 @router.message(Command(commands=[ContentType.SUCCESSFUL_PAYMENT]))
 async def on_successful_payment(message: Message, state: FSMContext):
-    await message.answer(f"""Оплата успешно проведена! Вы получили премиум-подписку на сумму 
+    current_datetime = datetime.now()
+    users = Bot_user.objects.create(
+        name=message.from_user.first_name,
+        tig_id=message.from_user.id,
+        subscription_date=current_datetime
+        )
+    await message.answer(f"""Оплата успешно проведена! {users.name} вы получили премиум-подписку на сумму 
 {message.successful_payment.total_amount // 100} {message.successful_payment.currency}.""")
